@@ -2,6 +2,8 @@
 
 $hoja=new hojeador;
 $hoja->iniciar_variables();
+$hoja->debugm("lista de soportados");
+
 
 if(isset($_GET['comenzar'])){
   $hoja->abrir_canal()
@@ -33,7 +35,7 @@ class hojeador{
     $errno=-1;
     $errstr="";
     $this->debugm("conectando");
-    $this->canal=fsockopen("www.google.com", 80, $errno, $errstr, 30);
+    $this->canal=fsockopen("www.google.com", 443, $errno, $errstr, 30);
     $this->debugm("resultado conexión ($errno), ($errstr)");
     if($errno<>0){
       return false;
@@ -52,9 +54,9 @@ class hojeador{
         "&service=cl&source=".urlencode($this->planilla)."\n";
     $longitud=strlen($contenido);
     $enviar=
-      "POST /accounts/ClientLogin HTTP/1.0\n".
+      "POST /accounts/ClientLogin HTTPS/1.0\n".
       "Content-type: application/x-www-form-urlencoded\n".
-      "Content-length: $longitud\n\n".
+    //  "Content-length: $longitud\n\n".
       $contenido."\n\n";
     //  "Connection: Close\r\n\r\n";
     $this->debugm("enviando autenticacion");
@@ -65,7 +67,7 @@ class hojeador{
   function obtener_respuesta(){
     $this->debugm("recibiendo");
     $i=1;
-    while (!feof($this->canal) && ($i<200000)) {
+    while (!feof($this->canal) && ($i<2000000)) {
         $i++;
         $s=fgets($this->canal, 1000);
         if($s){
